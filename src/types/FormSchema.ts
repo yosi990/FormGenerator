@@ -1,19 +1,28 @@
-// types/FormSchema.ts
-export interface FieldRule {
-    required?: boolean;
-    min?: number;
-    max?: number;
-    pattern?: string;
+export interface ValidationRule {
+    value: boolean | number | string | null;
+    error_message: string;
+  }
+  
+  export interface FieldRules {
+    required?: ValidationRule;
+    min?: ValidationRule;
+    max?: ValidationRule;
+    regex?: ValidationRule;
+  }
+  
+  export interface FieldOption {
+    key: string;
+    value: string;
   }
   
   export interface FormField {
-    name: string;
+    type: "input" | "input_number" | "select" | "textarea";
     label: string;
-    type: string;
-    rules: FieldRule;
+    rules: FieldRules;
+    options?: FieldOption[];
   }
   
-  export interface FormSchema {
+  export interface FormSection {
+    title: string;
     fields: FormField[];
   }
-  

@@ -1,8 +1,13 @@
-// services/formSchemaService.ts
-import axios from "axios";
-import { FormSchema } from "../types/FormSchema"
 
-export const getFormSchema = async (): Promise<FormSchema> => {
-  const response = await axios.get<FormSchema>("https://your-api.com/form-schema");
-  return response.data;
+import axios from "axios";
+import { FormSection } from "../types/FormSchema";
+
+export const getFormSchema = async (): Promise<FormSection[]> => {
+  try {
+    const response = await axios.get<FormSection[]>("https://private-705dcb-formgenerator1.apiary-mock.com/form_fields");
+    return response.data; // מחזיר מערך של FormSection
+  } catch (error) {
+    console.error("Error fetching form schema:", error);
+    return []; // במקרה של שגיאה מחזיר מערך ריק
+  }
 };
