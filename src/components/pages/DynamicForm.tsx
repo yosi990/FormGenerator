@@ -22,13 +22,6 @@ const FormFieldComponent: React.FC<Props> = ({ field, control, error }) => {
         let validator = controllerField.value;
 
       
-        // if (field.rules.regex?.value && typeof field.rules.regex.value === "string") {
-        //   validator = validator.matches(
-        //     new RegExp(field.rules.regex.value),
-        //     field.rules.regex.error_message
-        //   );
-        // }
-
         switch (field.type) {
           case "input":
           case "input_number":
