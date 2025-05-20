@@ -16,6 +16,7 @@ const HomePage: React.FC = () => {
   const [formSchema, setFormSchema] = useState<FormField[]>([]);
   const [submittedData, setSubmittedData] = useState<FormValues | null>(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [errorMessage ,setErrorMessage] =useState<string | null> (null)
 
   const [resolverSchema, setResolverSchema] = useState<yup.AnyObjectSchema>(yup.object());
 
@@ -26,6 +27,10 @@ const HomePage: React.FC = () => {
         setFormSchema(fields);
         const yupSchema = buildYupSchema(fields);
         setResolverSchema(yupSchema);
+        setErrorMessage(null)
+      }
+      else{
+        setErrorMessage("Error loading file")
       }
     });
   }, []);
