@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  TextField,
-  MenuItem
-} from "@mui/material";
+import {TextField, MenuItem} from "@mui/material";
 import { Controller } from "react-hook-form";
 import { FormField } from "../../types/FormSchema";
 
@@ -60,7 +57,7 @@ const FormFieldComponent: React.FC<Props> = ({ field, control, error }) => {
             );
 
           default:
-            // אלמנט תקין במקום null (תיקון לשגיאת TypeScript)
+          
             return <></>;
         }
       }}

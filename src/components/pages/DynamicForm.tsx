@@ -21,7 +21,7 @@ const FormFieldComponent: React.FC<Props> = ({ field, control, error }) => {
       render={({ field: controllerField }) => {
         let validator = controllerField.value;
 
-        // אם יש כלל regex, בודקים אם הוא מחרוזת תקינה
+      
         // if (field.rules.regex?.value && typeof field.rules.regex.value === "string") {
         //   validator = validator.matches(
         //     new RegExp(field.rules.regex.value),
@@ -67,7 +67,7 @@ const FormFieldComponent: React.FC<Props> = ({ field, control, error }) => {
             );
 
           default:
-            return <></>; // במקרה שאין סוג תואם, מחזירים רכיב ריק
+            return <></>;
         }
       }}
     />

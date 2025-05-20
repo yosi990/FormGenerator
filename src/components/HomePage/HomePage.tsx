@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from "react";
-import {
-  Container,
-  Button,
-  Typography,
-  Box,
-  Snackbar,
-  Alert,
-} from "@mui/material";
+import {  Container, Button, Typography, Box, Snackbar, Alert} from "@mui/material";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import FormFieldComponent from "../pages/DynamicForm";
 import { getFormSchema } from "../../services/Api";
 import { FormField } from "../../types/FormSchema";
+import { generateYupSchema } from "../../utils/yupSchema";
 
 interface FormValues {
-  [key: string]: string;
+  [key: string]: any;
 }
 
 const HomePage: React.FC = () => {
@@ -21,36 +17,36 @@ const HomePage: React.FC = () => {
   const [submittedData, setSubmittedData] = useState<FormValues | null>(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
+  const [resolverSchema, setResolverSchema] = useState<yup.AnyObjectSchema>(yup.object());
+
+  useEffect(() => {
+    getFormSchema().then((data) => {
+      if (data.length > 0) {
+        const fields = data[0].fields;
+        setFormSchema(fields);
+        const yupSchema = generateYupSchema(fields);
+        setResolverSchema(yupSchema);
+      }
+    });
+  }, []);
+
   const {
     control,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<FormValues>({
     mode: "onChange",
+    resolver: yupResolver(resolverSchema),
   });
-
-  useEffect(() => {
-    getFormSchema().then((data) => {
-      if (data && data.length > 0) {
-        setFormSchema(data[0].fields);
-      }
-    });
-  }, []);
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     setSubmittedData(data);
     setOpenSnackbar(true);
   };
 
-  const handleCloseSnackbar = () => {
-    setOpenSnackbar(false);
-  };
-
   return (
     <Container maxWidth="sm">
-      <Typography variant="h4" gutterBottom>
-        Dynamic Form
-      </Typography>
+      <Typography variant="h4" gutterBottom>Form Generator</Typography>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         {formSchema.map((field, index) => (
@@ -75,38 +71,29 @@ const HomePage: React.FC = () => {
         </Box>
       </form>
 
-      {/* סנאקבר קטן שנותן פידבק */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={3000}
-        onClose={handleCloseSnackbar}
+        onClose={() => setOpenSnackbar(false)}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }}>
+        <Alert severity="success" sx={{ width: "100%" }}>
           Form submitted successfully!
         </Alert>
       </Snackbar>
 
-     
       {submittedData && (
         <Box mt={4}>
-          <Typography variant="h6" gutterBottom>
-            Form Summary
-          </Typography>
-
-          <Box
-            sx={{
-              border: "1px solid #ddd",
-              borderRadius: 2,
-              padding: 2,
-              backgroundColor: "#f9f9f9",
-            }}
-          >
+          <Typography variant="h6" gutterBottom>Form Summary</Typography>
+          <Box sx={{
+            border: "1px solid #ddd",
+            borderRadius: 2,
+            padding: 2,
+            backgroundColor: "#f9f9f9"
+          }}>
             {Object.entries(submittedData).map(([key, value]) => (
               <Box key={key} mb={1}>
-                <Typography variant="body2" color="text.secondary">
-                  {key}:
-                </Typography>
+                <Typography variant="body2" color="text.secondary">{key}:</Typography>
                 <Typography variant="body1">{value}</Typography>
               </Box>
             ))}
