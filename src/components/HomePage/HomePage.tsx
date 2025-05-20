@@ -6,7 +6,7 @@ import * as yup from "yup";
 import FormFieldComponent from "../pages/DynamicForm";
 import { getFormSchema } from "../../services/Api";
 import { FormField } from "../../types/FormSchema";
-import { generateYupSchema } from "../../utils/yupSchema";
+import { buildYupSchema } from "../../utils/yupSchema";
 
 interface FormValues {
   [key: string]: any;
@@ -24,7 +24,7 @@ const HomePage: React.FC = () => {
       if (data.length > 0) {
         const fields = data[0].fields;
         setFormSchema(fields);
-        const yupSchema = generateYupSchema(fields);
+        const yupSchema = buildYupSchema(fields);
         setResolverSchema(yupSchema);
       }
     });

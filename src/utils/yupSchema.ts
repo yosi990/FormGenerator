@@ -1,37 +1,52 @@
 import * as yup from "yup";
 import { FormField } from "../types/FormSchema";
 
-export const generateYupSchema = (fields: FormField[]) => {
+export const buildYupSchema = (fields: FormField[]) => {
   const shape: Record<string, any> = {};
 
   fields.forEach((field) => {
-    const { rules } = field;
+    let validator: yup.StringSchema | yup.NumberSchema;
 
-    let validator: yup.StringSchema | yup.NumberSchema = 
-      field.type === "input_number" 
-        ? yup.number().typeError("Must be a number") 
-        : yup.string();
+    const isNumber = field.type === "input_number";
+    const isText = field.type === "input" || field.type === "textarea";
 
-    if (rules.required?.value) {
-      validator = validator.required(rules.required.error_message);
+    // התחלה עם טיפוס בסיסי
+    if (isNumber) {
+      validator = yup
+        .number()
+        .typeError("This field must be a number");
+    } else {
+      validator = yup.string();
     }
 
-    if (rules.min?.value) {
-      validator = field.type === "input_number"
-        ? validator.min(rules.min.value as number, rules.min.error_message)
-        : validator.min(rules.min.value as number, rules.min.error_message);
+    const { required, min, max, regex } = field.rules;
+
+    // Required
+    if (required?.value) {
+      validator = validator.required(required.error_message);
     }
 
-    if (rules.max?.value) {
-      validator = field.type === "input_number"
-        ? validator.max(rules.max.value as number, rules.max.error_message)
-        : validator.max(rules.max.value as number, rules.max.error_message);
+    // Min
+    if (min?.value !== undefined && typeof min.value === "number") {
+      const msg = min.error_message.replace("{{value}}", String(min.value));
+      validator = isNumber
+        ? (validator as yup.NumberSchema).min(min.value, msg)
+        : (validator as yup.StringSchema).min(min.value, msg);
     }
 
-    if (rules.regex?.value && field.type !== "input_number") {
+    // Max
+    if (max?.value !== undefined && typeof max.value === "number") {
+      const msg = max.error_message.replace("{{value}}", String(max.value));
+      validator = isNumber
+        ? (validator as yup.NumberSchema).max(max.value, msg)
+        : (validator as yup.StringSchema).max(max.value, msg);
+    }
+
+    // Regex - רק בטקסט
+    if (regex?.value && typeof regex.value === "string" && isText) {
       validator = (validator as yup.StringSchema).matches(
-        new RegExp(rules.regex.value as string),
-        rules.regex.error_message
+        new RegExp(regex.value),
+        regex.error_message
       );
     }
 
